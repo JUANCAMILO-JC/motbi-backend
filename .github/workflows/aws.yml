@@ -17,9 +17,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-          
-      - name: Add SSH passphrase
-        run: echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add -
 
       - name: Copy files via SSH
         run: |
