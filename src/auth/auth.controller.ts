@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUserDto } from './dto';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDto, LoginUserDto } from './dto';
+import { AuthService } from './auth.service';
+import { User } from './entities/user.entity';
+import { Auth, GetUser, RowHeader } from './decorators';
+import { ValidRoles } from './interfaces';
 
 
 @Controller('auth')
@@ -18,11 +21,40 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
+  @Get('check-status')
+  @Auth()
+  checkAuthStatus(
+    @GetUser() user: User
+  ) {
+    return this.authService.checkAuthStatus( user );
+  }
+
   @Get('private')
   @UseGuards( AuthGuard() )
-  testingPrivateRoute() {
+  testingPrivateRoute(
+    @Req() request: Express.Request,
+    @GetUser() user: User,
+    @GetUser('email') userEmail: string,
 
-    return 'algo'
+    @RowHeader() rawHeaders: string[]
+  ) {
+
+    return {
+      status: true,
+      message: 'ok',
+      user
+    }
+  }
+
+  @Get('p3')
+  @Auth( ValidRoles.admin)
+  privateRoute(
+    @GetUser() user: User
+  ) {
+    return {
+      ok:true,
+      user
+    }
   }
 
   // @Get()

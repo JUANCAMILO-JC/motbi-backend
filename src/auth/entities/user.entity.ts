@@ -18,7 +18,7 @@ export class User {
         array: true,
         default: ['user']
     })
-    roll: string[]
+    rolls: string[]
     
     @Column('bool', {
         default: true

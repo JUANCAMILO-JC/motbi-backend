@@ -1,7 +1,7 @@
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { User } from "../entities/user.entity";
-import { JwtPayload } from "../interfaces/jwt-payload-interface";
+import { JwtPayload } from "../interfaces/jwt-payload.interface";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ConfigService } from "@nestjs/config";
@@ -35,6 +35,7 @@ export class JwtStrategy extends PassportStrategy( Strategy ) {
         if( !user.isActive )
             throw new UnauthorizedException('User is inactive.');
 
+        console.log({user})
 
         return user;
 

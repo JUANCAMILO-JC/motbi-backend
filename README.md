@@ -5,12 +5,20 @@
 # MOTBI API
 
 1. Clonar Proyecto
+
 2. Instalar Dependencias npm install
+
 3. Clonar archivo .env.template y renombrarlo a .env
+
 4. Configurar variables de entorno en archivo .env
+
 5. Levantar la base de datos
 ```
 docker compose up -d
 ```
-6. Levantar el servidor con npm run start:dev
+
+6. Levantar el servidor
+```
+npm run start:dev
+```
 

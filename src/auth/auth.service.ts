@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
-import { JwtPayload } from './interfaces/jwt-payload-interface';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 
 
@@ -41,7 +41,7 @@ export class AuthService {
       // TODO: Retonar JWT de acceso
 
     } catch (error) {
-      this.handleDBError(error);
+      this.handleDBErrors(error);
     }
   }
 
@@ -51,7 +51,7 @@ export class AuthService {
 
     const user = await this.userRepository.findOne({
       where: { email },
-      select: { email: true, password: true, id: true }
+      select: { id: true, email: true, password: true }
     });
 
     if ( !user )
@@ -67,6 +67,16 @@ export class AuthService {
     // TODO: Retonar JWT de acceso
 
   }
+
+  async checkAuthStatus( user: User ){
+
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id, email: user.email })
+    };
+
+  }
+
 
   // findAll() {
   //   return `This action returns all auth`;
@@ -92,13 +102,15 @@ export class AuthService {
 
   }
 
-  private handleDBError( error: any ): never {
+  private handleDBErrors( error: any ): never {
 
-    if (error.code === '23505')
+
+    if ( error.code === '23505' ) 
       throw new BadRequestException( error.detail );
 
-    this.logger.error(error)
+    console.log(error)
 
-    throw new InternalServerErrorException('Contact support, unespecteted error')
+    throw new InternalServerErrorException('Please check server logs');
+
   }
 }
