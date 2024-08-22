@@ -1,18 +1,22 @@
+
+
 services:
   motbiapp:
     depends_on:
       - db
-    build:
+    build: 
       context: .
       dockerfile: Dockerfile
     image: motbi-docker
     container_name: motbiapp
-    restart: always
+    restart: always # reiniciar el contenedor si se detiene
     ports:
-      - "8080:8080"  # Expone el puerto 8080 en el contenedor y en el host
+      - "${PORT}:${PORT}"
+    # working_dir: /var/www/pokedex
     environment:
-      POSTGRESDB: ${POSTGRESDB}
-      PORT: 8080
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${DB_NAME}
+    # DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      PORT: ${PORT}
       DEFAULT_LIMIT: ${DEFAULT_LIMIT}
     # volumes:
     #   - ./:/var/www/pokedex
@@ -21,10 +25,12 @@ services:
     image: postgres:16.3
     container_name: motbidb
     restart: always
-    ports:  
-      - "5433:5432"
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./db:/var/lib/postgresql/data
+      
