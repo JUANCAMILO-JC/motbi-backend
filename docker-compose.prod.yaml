@@ -14,8 +14,7 @@ services:
       - "${PORT}:${PORT}"
     # working_dir: /var/www/pokedex
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${DB_NAME}
-    # DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${DB_USERNAME}:${DB_PASSWORD}@db:5432/${DB_NAME}
       PORT: ${PORT}
       DEFAULT_LIMIT: ${DEFAULT_LIMIT}
     # volumes:
