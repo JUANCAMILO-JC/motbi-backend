@@ -30,13 +30,13 @@ COPY --from=builder /app/dist ./dist
 # RUN mkdir -p ./motbi-backend
 
 # COPY --from=builder ./app/dist/ ./app
-# COPY ./.env ./app/.env
+COPY .env .env
 
 # # Dar permiso para ejecutar la applicación
 # RUN adduser --disabled-password pokeuser
 # RUN chown -R pokeuser:pokeuser ./pokedex
 # USER pokeuser
 
-EXPOSE 3000
+EXPOSE 3001
 
 CMD [ "node","dist/main" ]

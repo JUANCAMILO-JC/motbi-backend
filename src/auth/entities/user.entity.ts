@@ -9,6 +9,12 @@ export class User {
     @Column('text')
     username: string;
 
+    //nick
+    @Column('text', {
+        default: ''
+    })
+    nickname: string;
+
     @Column('text', {
         select: false
     })
@@ -44,7 +50,6 @@ export class User {
     email: string;
 
     //fullName: string;
-
     @BeforeInsert()
     checkFieldsBeforeInsert() {
         this.email = this.email.toLowerCase().trim();
