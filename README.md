@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://lh3.google.com/u/0/d/15AHYD_qVAk0lo8kNRWaD-WQjlOj7V1JH=w1366-h623-iv1" width="200" alt="Nest Logo" />
+  <img src="http://motbiapp.s3-website.us-east-2.amazonaws.com/assets/images/logo/motbi_logo.png" width="200" alt="MOTBI logo" />
 </p>
 
 # MOTBI API
