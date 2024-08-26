@@ -7,6 +7,7 @@ import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces';
 import { Response } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
+import { validate as isUUID } from 'uuid';
 
 
 @Injectable()
@@ -92,21 +93,135 @@ export class AuthService {
   }
 
 
-  // findAll() {
-  //   return `This action returns all auth`;
-  // }
+  async findAll() {
+    const users = await this.userRepository.find();
+    return users;
+  }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} auth`;
-  // }
+  async findOne(id: string) {
+    // Verificar si el ID es válido
+    if (!isUUID(id)) {
+      throw new BadRequestException(`El ${id} no es ID valido`);
+    }
+  
+    const user = await this.userRepository.findOneBy({ id });
+  
+    // Si el usuario no existe, lanzar una excepción
+    if (!user) {
+      throw new BadRequestException(`Usuario con ${id} no encontrado`);
+    }
+  
+    // Eliminar la contraseña antes de devolver el objeto
+    delete user.password;
+  
+    return user;
+  }
+  
 
-  // update(id: number, updateAuthDto: UpdateAuthDto) {
-  //   return `This action updates a #${id} auth`;
-  // }
+  async update(id: string, updateUserDto: CreateUserDto) {
+    // Verificar si el ID es válido
+    if (!isUUID(id)) {
+      throw new BadRequestException(`El ${id} no es ID valido`);
+    }
+  
+    const user = await this.userRepository.findOneBy({ id });
+  
+    // Si el usuario no existe, lanzar una excepción
+    if (!user) {
+      throw new BadRequestException(`Usuario con ${id} no encontrado`);
+    }
+  
+    try {
+      // Mezcla los datos actualizados con los existentes
+      const updatedUser = this.userRepository.merge(user, updateUserDto);
+  
+      // Si se proporciona una nueva contraseña, hashearla
+      if (updateUserDto.password) {
+        updatedUser.password = bcrypt.hashSync(updateUserDto.password, 10);
+      }
+  
+      // Guardar los cambios en la base de datos
+      await this.userRepository.save(updatedUser);
+  
+      // Remover la contraseña antes de devolver el objeto
+      delete updatedUser.password;
+  
+      const response: Response = {
+        success: true,
+        message: `El usuario con ${id} ha sido actualizado exitosamente`,
+        object: updatedUser,
+      };
+  
+      return response;
+  
+    } catch (error) {
+      this.handleDBErrors(error);
+    }
+  }
+  
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} auth`;
-  // }
+async delete(id: string) {
+  // Verificar si el ID es válido
+  if (!isUUID(id)) {
+    throw new BadRequestException(`El ${id} no es ID valido`);
+  }
+
+  const user = await this.userRepository.findOneBy({ id });
+
+  // Si el usuario no existe, lanzar una excepción
+  if (!user) {
+    throw new BadRequestException(`Usuario con ${id} no encontrado`);
+  }
+
+  try {
+    await this.userRepository.remove(user);
+
+    const response: Response = {
+      success: true,
+      message: `El usuario con ${id} ha sido eliminado exitosamente`,
+      object: user,
+    };
+
+    return response;
+
+  } catch (error) {
+    this.handleDBErrors(error);
+  }
+}
+
+async remove(id: string) {
+  // Verificar si el ID es válido
+  if (!isUUID(id)) {
+    throw new BadRequestException(`El ${id} no es ID valido`);
+  }
+
+  const user = await this.userRepository.findOneBy({ id });
+
+  // Si el usuario no existe, lanzar una excepción
+  if (!user) {
+    throw new BadRequestException(`Usuario con ${id} no encontrado`);
+  }
+
+  // Cambiar isActive a false
+  user.isActive = false;
+
+  try {
+    // Guardar los cambios en la base de datos
+    await this.userRepository.save(user);
+
+    const response: Response = {
+      success: true,
+      message: `El usuario con ${id} ha sido eliminado exitosamente`,
+      object: user,
+    };
+
+    return response;
+
+  } catch (error) {
+    this.handleDBErrors(error);
+  }
+}
+  
 
   private getJwtToken( payload: JwtPayload ) {
 

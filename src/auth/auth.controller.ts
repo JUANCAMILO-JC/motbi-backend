@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ParseUUIDPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { AuthService } from './auth.service';
@@ -47,34 +47,34 @@ export class AuthController {
     }
   }
 
-  @Get('p3')
-  @Auth( ValidRoles.admin)
-  privateRoute(
-    @GetUser() user: User
-  ) {
-    return {
-      ok:true,
-      user
-    }
+
+  @Get()
+  @Auth()
+  findAll() {
+    return this.authService.findAll();
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.authService.findAll();
-  // }
+  @Get(':id')
+  @Auth( ValidRoles.user)
+  findOne(@Param('id', ParseUUIDPipe ) id: string) {
+    return this.authService.findOne(id);
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.authService.findOne(+id);
-  // }
+  @Patch(':id')
+  @Auth( ValidRoles.user)
+  update(@Param('id', ParseUUIDPipe ) id: string, @Body() updateUserDto: CreateUserDto) {
+    return this.authService.update(id, updateUserDto);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-  //   return this.authService.update(+id, updateAuthDto);
-  // }
+  @Delete(':id')
+  @Auth( ValidRoles.admin)
+  delete(@Param('id', ParseUUIDPipe ) id: string) {
+    return this.authService.delete( id );
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.authService.remove(+id);
-  // }
+  @Delete('remove/:id')
+  @Auth( ValidRoles.admin)
+  remove(@Param('id', ParseUUIDPipe ) id: string) {
+    return this.authService.remove( id );
+  }
 }
